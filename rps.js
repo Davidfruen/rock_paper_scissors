@@ -1,66 +1,56 @@
-const getUserChoice = userInput => {
-userInput = userInput.toLowerCase();
+let playerScore = 0
+let computerScore = 0
+const buttons = document.querySelectorAll('input')
 
-if (userInput === "rock" || userInput === "paper" || userInput === "scissors" || userInput === 'bomb'){
-  return userInput;
-  console.log("You picked " + userInput + "!");
-  }else {
-  console.log(userInput + ' is not valid. That is incorrect. Please pick rock, paper or scissors.');
-};
-};
-
-const getComputerChoice = () => {
- const randomNumber = Math.floor(Math.random() * 3);
-  switch (randomNumber) {
-    case 0:
-      return 'rock';
-    case 1:
-      return 'paper';
-    case 2:
-      return 'scissors';
-}
+function computerPlay() {
+    let choices = ['rock', 'paper', 'scissors']
+    return choices[Math.floor(Math.random() * choices.length)]
 }
 
-const determineWinner = (userChoice, computerChoice) => {
-  if (userChoice === computerChoice) {
-    return 'Tie game.'
-  }
-  if (userChoice === 'rock') {
-    if (computerChoice === 'paper') {
-      return 'Computer won via paper against rock.'
-    }else{
-      return 'Congratulations, you won!'
+function disableButtons() {
+    buttons.forEach(elem => {
+        elem.disabled = true
+    })
+}
+
+function playRound(playerSelection) {
+    let computerSelection = computerPlay()
+    let result = ""
+
+    if ((playerSelection == 'rock' && computerSelection == 'scissors') ||
+        (playerSelection == 'scissors' && computerSelection == 'paper') ||
+        (playerSelection == 'paper' && computerSelection == 'rock')) {
+
+        playerScore += 1
+        result = ('You win! ' + playerSelection + ' beats ' + computerSelection
+            + "<br> <br> Player score: " + playerScore + "<br> <br> Computer score: " + computerScore)
+
+        if (playerScore == 5) {
+            result += '<br><br>You won the game! Reload the page to play again'
+            disableButtons()
+        }
     }
-  }
-
-  if (userChoice === 'paper') {
-    if (computerChoice === 'scissors') {
-      return 'Computer won via scissors vs. paper. Slashed.'
-    }else{
-      return 'Congratulations, you won!'
+    else if (playerSelection == computerSelection) {
+        result = ('It\'s a tie. You both chose ' + playerSelection
+            + "<br> <br> Player score: " + playerScore + "<br> <br> Computer score: " + computerScore)
     }
-  }
+    else {
+        computerScore += 1
+        result = ('You lose! ' + computerSelection + ' beats ' + playerSelection
+            + "<br> <br> Player score: " + playerScore + "<br> <br> Computer score: " + computerScore)
 
-  if (userChoice === 'scissors') {
-    if (computerChoice === 'rock') {
-      return 'Computer smashed scissors with a rock. Computer wins. '
-    }else{
-      return 'Congratulations, you won!'
-  }
-  }
+        if (computerScore == 5) {
+            result += '<br><br>I won the game! Reload the page to play again'
+            disableButtons()
+        }
+    }
 
-  if (userChoice === 'bomb') {
-    return "You exploded the bomb. You always win."
-  }
+    document.getElementById('result').innerHTML = result
+    return
 }
 
-const playGame = () => {
-const userChoice = getUserChoice('bomb');
-const computerChoice = getComputerChoice();
-console.log('You shot a ' + userChoice);
-console.log('The computer shot ' + computerChoice);
-
-console.log(determineWinner(userChoice, computerChoice));
-};
-
-playGame()
+buttons.forEach(button =>{
+    button.addEventListener('click', function(){
+        playRound(button.value)
+    })
+})
